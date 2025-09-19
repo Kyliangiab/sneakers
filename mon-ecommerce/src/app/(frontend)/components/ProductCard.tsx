@@ -1,0 +1,155 @@
+'use client'
+
+import Image from 'next/image'
+import Link from 'next/link'
+import { Star, ShoppingCart } from 'lucide-react'
+import { useState } from 'react'
+import Toast from './Toast'
+
+interface ProductCardProps {
+  product: {
+    id: string
+    title: string
+    slug: string
+    price: number
+    images?: Array<{
+      url: string
+      alt?: string
+    }>
+    rating?: number
+    reviewCount?: number
+    isNewArrival?: boolean
+    variants?: Array<{
+      name: string
+      value: string
+      stock: number
+    }>
+  }
+}
+
+export default function ProductCard({ product }: ProductCardProps) {
+  const [isHovered, setIsHovered] = useState(false)
+  const [showToast, setShowToast] = useState(false)
+
+  const formatPrice = (price: number) => {
+    return new Intl.NumberFormat('fr-FR', {
+      style: 'currency',
+      currency: 'EUR',
+    }).format(price)
+  }
+
+  const renderStars = (rating: number = 5) => {
+    return Array.from({ length: 5 }, (_, i) => (
+      <Star
+        key={i}
+        className={`w-4 h-4 ${
+          i < Math.floor(rating) ? 'fill-yellow-400 text-yellow-400' : 'text-gray-300'
+        }`}
+      />
+    ))
+  }
+
+  const handleAddToCart = (e: React.MouseEvent) => {
+    e.preventDefault()
+    e.stopPropagation()
+    // TODO: Implémenter l'ajout au panier
+    console.log('Ajouter au panier:', product.title)
+    setShowToast(true)
+  }
+
+  // Déterminer quelle image afficher
+  const getCurrentImage = () => {
+    if (!product.images || product.images.length === 0) {
+      return null
+    }
+
+    if (isHovered && product.images.length > 1) {
+      return product.images[1] // Deuxième image au hover
+    }
+
+    return product.images[0] // Première image par défaut
+  }
+
+  const currentImage = getCurrentImage()
+
+  return (
+    <>
+      <div
+        className="group cursor-pointer"
+        onMouseEnter={() => setIsHovered(true)}
+        onMouseLeave={() => setIsHovered(false)}
+      >
+        <Link href={`/product/${product.slug}`}>
+          <div className="bg-white rounded-lg overflow-hidden shadow-sm hover:shadow-lg transition-all duration-300 group-hover:scale-105">
+            {/* Image Container */}
+            <div className="relative aspect-square bg-gray-50 overflow-hidden">
+              {currentImage ? (
+                <Image
+                  src={currentImage.url}
+                  alt={currentImage.alt || product.title}
+                  fill
+                  className="object-cover transition-all duration-300"
+                  sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                />
+              ) : (
+                <div className="w-full h-full bg-gray-200 flex items-center justify-center">
+                  <span className="text-gray-400 text-sm">Image non disponible</span>
+                </div>
+              )}
+
+              {/* Badge NOUVEAU */}
+              {product.isNewArrival && (
+                <div className="absolute top-3 left-3 bg-white border border-black rounded-full px-3 py-1 z-10">
+                  <span className="text-black text-xs font-medium uppercase tracking-wide">
+                    Nouveau
+                  </span>
+                </div>
+              )}
+
+              {/* Bouton Ajouter au panier - visible au hover */}
+              <div
+                className={`absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-20 transition-all duration-300 flex items-center justify-center ${
+                  isHovered ? 'opacity-100' : 'opacity-0'
+                }`}
+              >
+                <button
+                  onClick={handleAddToCart}
+                  className="bg-orange-500 hover:bg-orange-600 text-white px-6 py-3 rounded-lg font-medium transition-all duration-200 transform translate-y-4 group-hover:translate-y-0 flex items-center space-x-2 shadow-lg"
+                >
+                  <ShoppingCart className="w-4 h-4" />
+                  <span>Ajouter au panier</span>
+                </button>
+              </div>
+            </div>
+
+            {/* Product Info */}
+            <div className="p-4 space-y-2">
+              {/* Product Name */}
+              <h3 className="font-medium text-gray-900 text-sm leading-tight line-clamp-2 group-hover:text-orange-500 transition-colors">
+                {product.title}
+              </h3>
+
+              {/* Rating */}
+              <div className="flex items-center space-x-1">
+                <div className="flex items-center">{renderStars(product.rating)}</div>
+                <span className="text-gray-500 text-xs">({product.reviewCount || 0})</span>
+              </div>
+
+              {/* Price */}
+              <div className="text-lg font-bold text-gray-900">{formatPrice(product.price)}</div>
+            </div>
+          </div>
+        </Link>
+      </div>
+
+      {/* Toast de confirmation */}
+      {showToast && (
+        <Toast
+          message={`${product.title} ajouté au panier !`}
+          type="success"
+          onClose={() => setShowToast(false)}
+        />
+      )}
+    </>
+  )
+}
