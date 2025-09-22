@@ -10,6 +10,7 @@ import { fileURLToPath } from 'url'
 
 import { anyone } from '../access/anyone'
 import { authenticated } from '../access/authenticated'
+import { adminOrVendeur } from '../access/adminOrVendeur'
 
 const filename = fileURLToPath(import.meta.url)
 const dirname = path.dirname(filename)
@@ -17,10 +18,11 @@ const dirname = path.dirname(filename)
 export const Media: CollectionConfig = {
   slug: 'media',
   access: {
-    create: authenticated,
-    delete: authenticated,
-    read: anyone,
-    update: authenticated,
+    create: adminOrVendeur, // Seuls les admins et vendeurs peuvent uploader des médias
+    delete: adminOrVendeur, // Seuls les admins et vendeurs peuvent supprimer des médias
+    read: anyone, // Lecture publique pour le frontend
+    update: adminOrVendeur, // Seuls les admins et vendeurs peuvent modifier des médias
+    admin: adminOrVendeur, // Seuls les admins et vendeurs peuvent accéder au CMS
   },
   fields: [
     {

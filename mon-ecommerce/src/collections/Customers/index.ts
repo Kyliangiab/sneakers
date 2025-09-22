@@ -1,10 +1,18 @@
 import { CollectionConfig } from 'payload/types'
+import { adminOrVendeur } from '../../access/adminOrVendeur'
 
 export const Customers: CollectionConfig = {
   slug: 'customers',
   admin: {
     useAsTitle: 'email',
     defaultColumns: ['email', 'firstName', 'lastName', 'totalSpent', 'updatedAt'],
+  },
+  access: {
+    read: adminOrVendeur, // Seuls les admins et vendeurs peuvent voir les clients
+    create: adminOrVendeur, // Seuls les admins et vendeurs peuvent créer des clients
+    update: adminOrVendeur, // Seuls les admins et vendeurs peuvent modifier des clients
+    delete: adminOrVendeur, // Seuls les admins et vendeurs peuvent supprimer des clients
+    admin: adminOrVendeur, // Seuls les admins et vendeurs peuvent accéder au CMS
   },
   fields: [
     {

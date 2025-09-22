@@ -20,6 +20,7 @@ import { Header } from './Header/config'
 import { plugins } from './plugins'
 import { defaultLexical } from '@/fields/defaultLexical'
 import { getServerSideURL } from './utilities/getURL'
+import { adminOrVendeur } from './access/adminOrVendeur'
 
 const filename = fileURLToPath(import.meta.url)
 const dirname = path.dirname(filename)
@@ -38,6 +39,8 @@ export default buildConfig({
       baseDir: path.resolve(dirname),
     },
     user: Users.slug,
+    // Configuration d'accès global : permettre aux admins et vendeurs d'accéder au panneau d'administration
+    access: adminOrVendeur,
     livePreview: {
       breakpoints: [
         {

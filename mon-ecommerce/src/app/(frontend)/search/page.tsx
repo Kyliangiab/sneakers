@@ -35,7 +35,7 @@ interface FilterState {
 export default function SearchPage() {
   const searchParams = useSearchParams()
   const query = searchParams.get('q') || ''
-  
+
   const [products, setProducts] = useState<Product[]>([])
   const [loading, setLoading] = useState(true)
   const [totalResults, setTotalResults] = useState(0)
@@ -47,7 +47,7 @@ export default function SearchPage() {
     priceRange: [0, 1000],
     brands: [],
     colors: [],
-    sizes: []
+    sizes: [],
   })
 
   useEffect(() => {
@@ -62,7 +62,7 @@ export default function SearchPage() {
       const params = new URLSearchParams({
         search: query,
         page: currentPage.toString(),
-        limit: '12'
+        limit: '12',
       })
 
       // Ajouter les filtres
@@ -100,9 +100,9 @@ export default function SearchPage() {
   }
 
   const handleFilterChange = (filterType: keyof FilterState, value: any) => {
-    setFilters(prev => ({
+    setFilters((prev) => ({
       ...prev,
-      [filterType]: value
+      [filterType]: value,
     }))
     setCurrentPage(1) // Reset à la première page
   }
@@ -113,13 +113,13 @@ export default function SearchPage() {
       priceRange: [0, 1000],
       brands: [],
       colors: [],
-      sizes: []
+      sizes: [],
     })
     setCurrentPage(1)
   }
 
   const loadMore = () => {
-    setCurrentPage(prev => prev + 1)
+    setCurrentPage((prev) => prev + 1)
   }
 
   if (loading && currentPage === 1) {
@@ -141,7 +141,9 @@ export default function SearchPage() {
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Breadcrumb */}
         <nav className="flex items-center space-x-2 text-sm text-gray-600 mb-8">
-          <Link href="/" className="hover:text-orange-500">Accueil</Link>
+          <Link href="/" className="hover:text-orange-500">
+            Accueil
+          </Link>
           <ChevronRight className="w-4 h-4" />
           <span className="text-gray-900">Recherche</span>
         </nav>
@@ -150,16 +152,15 @@ export default function SearchPage() {
         <div className="mb-8">
           <div className="flex items-center space-x-3 mb-4">
             <Search className="w-6 h-6 text-gray-600" />
-            <h1 className="text-2xl font-bold text-gray-900">
-              Résultats pour "{query}"
-            </h1>
+            <h1 className="text-2xl font-bold text-gray-900">Résultats pour "{query}"</h1>
           </div>
-          
+
           <div className="flex items-center justify-between">
             <p className="text-gray-600">
-              {totalResults} produit{totalResults > 1 ? 's' : ''} trouvé{totalResults > 1 ? 's' : ''}
+              {totalResults} produit{totalResults > 1 ? 's' : ''} trouvé
+              {totalResults > 1 ? 's' : ''}
             </p>
-            
+
             <button
               onClick={() => setShowFilters(!showFilters)}
               className="md:hidden flex items-center space-x-2 px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50"
@@ -196,14 +197,12 @@ export default function SearchPage() {
                         onChange={(e) => {
                           const newCategories = e.target.checked
                             ? [...filters.category, category]
-                            : filters.category.filter(c => c !== category)
+                            : filters.category.filter((c) => c !== category)
                           handleFilterChange('category', newCategories)
                         }}
                         className="rounded border-gray-300 text-orange-600 focus:ring-orange-500"
                       />
-                      <span className="ml-2 text-sm text-gray-700 capitalize">
-                        {category}
-                      </span>
+                      <span className="ml-2 text-sm text-gray-700 capitalize">{category}</span>
                     </label>
                   ))}
                 </div>
@@ -219,7 +218,12 @@ export default function SearchPage() {
                     max="1000"
                     step="10"
                     value={filters.priceRange[1]}
-                    onChange={(e) => handleFilterChange('priceRange', [filters.priceRange[0], parseInt(e.target.value)])}
+                    onChange={(e) =>
+                      handleFilterChange('priceRange', [
+                        filters.priceRange[0],
+                        parseInt(e.target.value),
+                      ])
+                    }
                     className="w-full"
                   />
                   <div className="flex justify-between text-sm text-gray-600">
@@ -241,7 +245,7 @@ export default function SearchPage() {
                         onChange={(e) => {
                           const newBrands = e.target.checked
                             ? [...filters.brands, brand]
-                            : filters.brands.filter(b => b !== brand)
+                            : filters.brands.filter((b) => b !== brand)
                           handleFilterChange('brands', newBrands)
                         }}
                         className="rounded border-gray-300 text-orange-600 focus:ring-orange-500"
@@ -259,9 +263,7 @@ export default function SearchPage() {
             {products.length === 0 ? (
               <div className="text-center py-12">
                 <Search className="w-16 h-16 text-gray-400 mx-auto mb-4" />
-                <h3 className="text-lg font-medium text-gray-900 mb-2">
-                  Aucun produit trouvé
-                </h3>
+                <h3 className="text-lg font-medium text-gray-900 mb-2">Aucun produit trouvé</h3>
                 <p className="text-gray-600 mb-6">
                   Essayez de modifier vos critères de recherche ou vos filtres.
                 </p>

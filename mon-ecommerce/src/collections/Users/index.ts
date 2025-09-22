@@ -1,15 +1,16 @@
 import type { CollectionConfig } from 'payload'
 
 import { authenticated } from '../../access/authenticated'
+import { adminOnly } from '../../access/adminOnly'
 
 export const Users: CollectionConfig = {
   slug: 'users',
   access: {
-    admin: authenticated,
+    admin: adminOnly, // Seuls les admins peuvent accéder à la gestion des utilisateurs
     create: () => true, // Permettre la création pour l'inscription
-    delete: authenticated,
-    read: authenticated,
-    update: authenticated,
+    delete: adminOnly, // Seuls les admins peuvent supprimer des utilisateurs
+    read: adminOnly, // Seuls les admins peuvent voir la liste des utilisateurs
+    update: adminOnly, // Seuls les admins peuvent modifier les utilisateurs
   },
   admin: {
     defaultColumns: ['name', 'email', 'role'],

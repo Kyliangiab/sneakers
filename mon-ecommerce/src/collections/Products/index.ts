@@ -1,4 +1,5 @@
 import { CollectionConfig } from 'payload/types'
+import { adminOrVendeur } from '../../access/adminOrVendeur'
 
 export const Products: CollectionConfig = {
   slug: 'products',
@@ -7,7 +8,11 @@ export const Products: CollectionConfig = {
     defaultColumns: ['title', 'price', 'category', 'updatedAt'],
   },
   access: {
-    read: () => true,
+    read: () => true, // Lecture publique pour le frontend
+    admin: adminOrVendeur, // Seuls les admins et vendeurs peuvent accéder au CMS
+    create: adminOrVendeur, // Seuls les admins et vendeurs peuvent créer des produits
+    update: adminOrVendeur, // Seuls les admins et vendeurs peuvent modifier des produits
+    delete: adminOrVendeur, // Seuls les admins et vendeurs peuvent supprimer des produits
   },
   fields: [
     {

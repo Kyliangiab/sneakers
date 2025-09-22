@@ -1,9 +1,14 @@
-import type { AccessArgs } from 'payload'
+import { Access } from 'payload/types'
 
-import type { User } from '@/payload-types'
-
-type isAuthenticated = (args: AccessArgs<User>) => boolean
-
-export const authenticated: isAuthenticated = ({ req: { user } }) => {
-  return Boolean(user)
+/**
+ * Accès pour tous les utilisateurs authentifiés
+ */
+export const authenticated: Access = ({ req: { user } }) => {
+  // Si l'utilisateur est connecté
+  if (user) {
+    return true
+  }
+  
+  // Sinon, refuser l'accès
+  return false
 }
