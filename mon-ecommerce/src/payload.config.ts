@@ -15,6 +15,7 @@ import { Users } from './collections/Users'
 import { Products } from './collections/Products'
 import { Orders } from './collections/Orders'
 import { Customers } from './collections/Customers'
+import { Reprises } from './collections/Reprises'
 import { Footer } from './Footer/config'
 import { Header } from './Header/config'
 import { plugins } from './plugins'
@@ -79,6 +80,7 @@ export default buildConfig({
     Products,
     Orders,
     Customers,
+    Reprises,
   ],
   cors: [getServerSideURL()].filter(Boolean),
   globals: [Header, Footer],

@@ -75,6 +75,7 @@ export interface Config {
     products: Product;
     orders: Order;
     customers: Customer;
+    reprises: Reprise;
     redirects: Redirect;
     forms: Form;
     'form-submissions': FormSubmission;
@@ -94,6 +95,7 @@ export interface Config {
     products: ProductsSelect<false> | ProductsSelect<true>;
     orders: OrdersSelect<false> | OrdersSelect<true>;
     customers: CustomersSelect<false> | CustomersSelect<true>;
+    reprises: ReprisesSelect<false> | ReprisesSelect<true>;
     redirects: RedirectsSelect<false> | RedirectsSelect<true>;
     forms: FormsSelect<false> | FormsSelect<true>;
     'form-submissions': FormSubmissionsSelect<false> | FormSubmissionsSelect<true>;
@@ -863,6 +865,67 @@ export interface Customer {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "reprises".
+ */
+export interface Reprise {
+  id: number;
+  reference: string;
+  customer: number | User;
+  customerEmail: string;
+  customerPhone?: string | null;
+  shoeDetails: {
+    brand: string;
+    model: string;
+    size: number;
+    color: string;
+    condition: 'neuf_etiquette' | 'neuf_sans_etiquette' | 'tres_bon_etat' | 'bon_etat' | 'etat_correct' | 'use';
+    purchaseDate?: string | null;
+    purchasePrice?: number | null;
+    originalBox?: boolean | null;
+    originalReceipt?: boolean | null;
+  };
+  images?:
+    | {
+        image: number | Media;
+        description?: string | null;
+        id?: string | null;
+      }[]
+    | null;
+  status: 'pending' | 'evaluating' | 'accepted' | 'rejected' | 'paid' | 'shipped' | 'received' | 'cancelled';
+  evaluation?: {
+    estimatedValue?: number | null;
+    offerPrice?: number | null;
+    evaluationNotes?: string | null;
+    evaluatedBy?: (number | null) | User;
+    evaluationDate?: string | null;
+  };
+  shipping: {
+    shippingAddress: {
+      firstName: string;
+      lastName: string;
+      address: string;
+      city: string;
+      postalCode: string;
+      country: string;
+    };
+    trackingNumber?: string | null;
+    shippingDate?: string | null;
+    receivedDate?: string | null;
+  };
+  payment?: {
+    paymentMethod?: ('bank_transfer' | 'paypal' | 'check' | 'store_credit') | null;
+    paymentDate?: string | null;
+    paymentReference?: string | null;
+  };
+  /**
+   * Notes visibles uniquement par les admins et vendeurs
+   */
+  notes?: string | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "redirects".
  */
 export interface Redirect {
@@ -1065,6 +1128,10 @@ export interface PayloadLockedDocument {
     | ({
         relationTo: 'customers';
         value: number | Customer;
+      } | null)
+    | ({
+        relationTo: 'reprises';
+        value: number | Reprise;
       } | null)
     | ({
         relationTo: 'redirects';
@@ -1535,6 +1602,73 @@ export interface CustomersSelect<T extends boolean = true> {
   totalSpent?: T;
   orderCount?: T;
   lastOrderDate?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "reprises_select".
+ */
+export interface ReprisesSelect<T extends boolean = true> {
+  reference?: T;
+  customer?: T;
+  customerEmail?: T;
+  customerPhone?: T;
+  shoeDetails?:
+    | T
+    | {
+        brand?: T;
+        model?: T;
+        size?: T;
+        color?: T;
+        condition?: T;
+        purchaseDate?: T;
+        purchasePrice?: T;
+        originalBox?: T;
+        originalReceipt?: T;
+      };
+  images?:
+    | T
+    | {
+        image?: T;
+        description?: T;
+        id?: T;
+      };
+  status?: T;
+  evaluation?:
+    | T
+    | {
+        estimatedValue?: T;
+        offerPrice?: T;
+        evaluationNotes?: T;
+        evaluatedBy?: T;
+        evaluationDate?: T;
+      };
+  shipping?:
+    | T
+    | {
+        shippingAddress?:
+          | T
+          | {
+              firstName?: T;
+              lastName?: T;
+              address?: T;
+              city?: T;
+              postalCode?: T;
+              country?: T;
+            };
+        trackingNumber?: T;
+        shippingDate?: T;
+        receivedDate?: T;
+      };
+  payment?:
+    | T
+    | {
+        paymentMethod?: T;
+        paymentDate?: T;
+        paymentReference?: T;
+      };
+  notes?: T;
   updatedAt?: T;
   createdAt?: T;
 }

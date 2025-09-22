@@ -13,6 +13,9 @@ import {
   Eye,
   Clock,
   CheckCircle,
+  RotateCcw,
+  Image,
+  X,
 } from 'lucide-react'
 import Header from '../components/Header'
 import Footer from '../components/Footer'
@@ -56,14 +59,49 @@ interface Order {
   updatedAt: string
 }
 
+interface Reprise {
+  id: string
+  reference: string
+  customerEmail: string
+  status:
+    | 'pending'
+    | 'evaluating'
+    | 'accepted'
+    | 'rejected'
+    | 'paid'
+    | 'shipped'
+    | 'received'
+    | 'cancelled'
+  shoeDetails: {
+    brand: string
+    model: string
+    size: number
+    color: string
+    condition: string
+  }
+  evaluation?: {
+    estimatedValue?: number
+    offerPrice?: number
+    evaluationNotes?: string
+  }
+  images: Array<{
+    image: {
+      url: string
+      alt?: string
+    }
+  }>
+  createdAt: string
+}
+
 export default function AccountPage() {
   const [user, setUser] = useState<UserData | null>(null)
   const [orders, setOrders] = useState<Order[]>([])
+  const [reprises, setReprises] = useState<Reprise[]>([])
   const [loading, setLoading] = useState(true)
   const [ordersLoading, setOrdersLoading] = useState(false)
-  const [activeTab, setActiveTab] = useState<'profile' | 'orders' | 'favorites' | 'settings'>(
-    'profile',
-  )
+  const [activeTab, setActiveTab] = useState<
+    'profile' | 'orders' | 'reprises' | 'favorites' | 'settings'
+  >('profile')
 
   useEffect(() => {
     // Récupérer les informations de l'utilisateur depuis le localStorage ou l'API
@@ -78,6 +116,8 @@ export default function AccountPage() {
   useEffect(() => {
     if (activeTab === 'orders' && user) {
       fetchUserOrders()
+    } else if (activeTab === 'reprises' && user) {
+      fetchUserReprises()
     }
   }, [activeTab, user])
 
@@ -103,6 +143,21 @@ export default function AccountPage() {
       console.error('Erreur lors de la récupération des commandes:', error)
     } finally {
       setOrdersLoading(false)
+    }
+  }
+
+  const fetchUserReprises = async () => {
+    if (!user?.email) return
+
+    try {
+      const response = await fetch(`/api/reprises?customerEmail=${encodeURIComponent(user.email)}`)
+      const data = await response.json()
+
+      if (data.docs) {
+        setReprises(data.docs)
+      }
+    } catch (error) {
+      console.error('Erreur lors de la récupération des reprises:', error)
     }
   }
 
@@ -157,6 +212,65 @@ export default function AccountPage() {
           label: 'Échouée',
           color: 'bg-red-100 text-red-800',
           icon: Clock,
+        }
+      default:
+        return {
+          label: status,
+          color: 'bg-gray-100 text-gray-800',
+          icon: Clock,
+        }
+    }
+  }
+
+  const getRepriseStatusConfig = (status: string) => {
+    switch (status) {
+      case 'pending':
+        return {
+          label: 'En attente',
+          color: 'bg-yellow-100 text-yellow-800',
+          icon: Clock,
+        }
+      case 'evaluating':
+        return {
+          label: 'En évaluation',
+          color: 'bg-blue-100 text-blue-800',
+          icon: Eye,
+        }
+      case 'accepted':
+        return {
+          label: 'Acceptée',
+          color: 'bg-green-100 text-green-800',
+          icon: CheckCircle,
+        }
+      case 'rejected':
+        return {
+          label: 'Refusée',
+          color: 'bg-red-100 text-red-800',
+          icon: X,
+        }
+      case 'paid':
+        return {
+          label: 'Payée',
+          color: 'bg-green-100 text-green-800',
+          icon: CheckCircle,
+        }
+      case 'shipped':
+        return {
+          label: 'Expédiée',
+          color: 'bg-purple-100 text-purple-800',
+          icon: Package,
+        }
+      case 'received':
+        return {
+          label: 'Réceptionnée',
+          color: 'bg-gray-100 text-gray-800',
+          icon: CheckCircle,
+        }
+      case 'cancelled':
+        return {
+          label: 'Annulée',
+          color: 'bg-gray-100 text-gray-800',
+          icon: X,
         }
       default:
         return {
@@ -256,6 +370,17 @@ export default function AccountPage() {
                 >
                   <Package className="w-5 h-5 mr-3" />
                   Mes Commandes
+                </button>
+                <button
+                  onClick={() => setActiveTab('reprises')}
+                  className={`w-full flex items-center px-4 py-3 text-left rounded-md transition-colors ${
+                    activeTab === 'reprises'
+                      ? 'bg-orange-50 text-orange-700 border-r-2 border-orange-500'
+                      : 'text-gray-700 hover:bg-gray-50'
+                  }`}
+                >
+                  <RotateCcw className="w-5 h-5 mr-3" />
+                  Mes Reprises
                 </button>
                 <button
                   onClick={() => setActiveTab('favorites')}
@@ -459,6 +584,107 @@ export default function AccountPage() {
                           </a>
                         </div>
                       )}
+                    </div>
+                  )}
+                </div>
+              )}
+
+              {activeTab === 'reprises' && (
+                <div>
+                  <div className="flex justify-between items-center mb-6">
+                    <h2 className="text-xl font-semibold text-gray-900">Mes Reprises</h2>
+                    <a
+                      href="/reprise/demande"
+                      className="bg-orange-500 text-white px-4 py-2 rounded-md hover:bg-orange-600 transition-colors text-sm font-medium"
+                    >
+                      Nouvelle demande
+                    </a>
+                  </div>
+
+                  {reprises.length === 0 ? (
+                    <div className="text-center py-12">
+                      <RotateCcw className="w-16 h-16 text-gray-400 mx-auto mb-4" />
+                      <h3 className="text-lg font-medium text-gray-900 mb-2">Aucune reprise</h3>
+                      <p className="text-gray-600 mb-6">
+                        Vous n'avez pas encore soumis de demande de reprise.
+                      </p>
+                      <a
+                        href="/reprise/demande"
+                        className="bg-orange-500 text-white px-6 py-3 rounded-md hover:bg-orange-600 transition-colors"
+                      >
+                        Créer une demande
+                      </a>
+                    </div>
+                  ) : (
+                    <div className="space-y-4">
+                      {reprises.map((reprise) => {
+                        const statusConfig = getRepriseStatusConfig(reprise.status)
+                        const StatusIcon = statusConfig.icon
+                        const firstImage = reprise.images[0]
+
+                        return (
+                          <div
+                            key={reprise.id}
+                            className="border border-gray-200 rounded-lg p-4 hover:shadow-md transition-shadow"
+                          >
+                            <div className="flex items-start space-x-4">
+                              {/* Image de la chaussure */}
+                              <div className="flex-shrink-0">
+                                {firstImage ? (
+                                  <img
+                                    src={firstImage.image.url}
+                                    alt={firstImage.image.alt || 'Photo de la chaussure'}
+                                    className="w-16 h-16 object-cover rounded-lg"
+                                  />
+                                ) : (
+                                  <div className="w-16 h-16 bg-gray-200 rounded-lg flex items-center justify-center">
+                                    <Image className="w-8 h-8 text-gray-400" />
+                                  </div>
+                                )}
+                              </div>
+
+                              {/* Détails de la reprise */}
+                              <div className="flex-1 min-w-0">
+                                <div className="flex items-center justify-between mb-2">
+                                  <h3 className="font-semibold text-gray-900">
+                                    {reprise.shoeDetails.brand} {reprise.shoeDetails.model}
+                                  </h3>
+                                  <span
+                                    className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${statusConfig.color}`}
+                                  >
+                                    <StatusIcon className="w-3 h-3 mr-1" />
+                                    {statusConfig.label}
+                                  </span>
+                                </div>
+
+                                <div className="text-sm text-gray-600 mb-2">
+                                  <p>
+                                    Référence :{' '}
+                                    <span className="font-mono">{reprise.reference}</span>
+                                  </p>
+                                  <p>
+                                    Taille {reprise.shoeDetails.size} • {reprise.shoeDetails.color}
+                                  </p>
+                                  <p>État : {reprise.shoeDetails.condition.replace('_', ' ')}</p>
+                                </div>
+
+                                {reprise.evaluation?.offerPrice && (
+                                  <div className="text-sm">
+                                    <span className="text-gray-600">Offre : </span>
+                                    <span className="font-semibold text-green-600">
+                                      {reprise.evaluation.offerPrice}€
+                                    </span>
+                                  </div>
+                                )}
+
+                                <p className="text-xs text-gray-500 mt-2">
+                                  Demandée le {formatDate(reprise.createdAt)}
+                                </p>
+                              </div>
+                            </div>
+                          </div>
+                        )
+                      })}
                     </div>
                   )}
                 </div>
