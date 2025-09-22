@@ -4,6 +4,7 @@ import Link from 'next/link'
 import { useState, useEffect } from 'react'
 import { ShoppingCart, User, Menu, LogOut } from 'lucide-react'
 import { useCart } from '@/contexts/CartContext'
+import SearchBar from './SearchBar'
 
 interface UserData {
   id: number
@@ -91,6 +92,11 @@ export default function Header() {
             ))}
           </nav>
 
+          {/* Search Bar */}
+          <div className="hidden md:block">
+            <SearchBar />
+          </div>
+
           {/* Right Side Actions */}
           <div className="flex items-center space-x-4">
             {/* Cart */}
@@ -160,7 +166,12 @@ export default function Header() {
         {/* Mobile Navigation */}
         {isMenuOpen && (
           <div className="md:hidden border-t border-gray-200 py-4">
-            <nav className="flex flex-col space-y-4">
+            {/* Mobile Search Bar */}
+            <div className="mb-4 px-4">
+              <SearchBar />
+            </div>
+            
+            <nav className="flex flex-col space-y-4 px-4">
               {navigationItems.map((item) => (
                 <Link
                   key={item.label}
