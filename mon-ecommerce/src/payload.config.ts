@@ -39,8 +39,6 @@ export default buildConfig({
       baseDir: path.resolve(dirname),
     },
     user: Users.slug,
-    // Configuration d'accès global : permettre aux admins et vendeurs d'accéder au panneau d'administration
-    access: adminOrVendeur,
     livePreview: {
       breakpoints: [
         {

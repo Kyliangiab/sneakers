@@ -6,7 +6,13 @@ import { adminOnly } from '../../access/adminOnly'
 export const Users: CollectionConfig = {
   slug: 'users',
   access: {
-    admin: adminOnly, // Seuls les admins peuvent accéder à la gestion des utilisateurs
+    admin: ({ req: { user } }) => {
+      // Permettre l'accès au panneau d'administration pour les admins et vendeurs
+      if (user && (user.role === 'admin' || user.role === 'vendeur')) {
+        return true
+      }
+      return false
+    },
     create: () => true, // Permettre la création pour l'inscription
     delete: adminOnly, // Seuls les admins peuvent supprimer des utilisateurs
     read: adminOnly, // Seuls les admins peuvent voir la liste des utilisateurs
