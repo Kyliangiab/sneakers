@@ -12,6 +12,8 @@ import { Providers } from '@/providers'
 import { InitTheme } from '@/providers/Theme/InitTheme'
 import { mergeOpenGraph } from '@/utilities/mergeOpenGraph'
 import { draftMode } from 'next/headers'
+import { CartProvider } from '@/contexts/CartContext'
+import CookieConsent from './components/CookieConsent'
 
 import './globals.css'
 import { getServerSideURL } from '@/utilities/getURL'
@@ -28,15 +30,18 @@ export default async function RootLayout({ children }: { children: React.ReactNo
       </head>
       <body>
         <Providers>
-          <AdminBar
-            adminBarProps={{
-              preview: isEnabled,
-            }}
-          />
+          <CartProvider>
+            <AdminBar
+              adminBarProps={{
+                preview: isEnabled,
+              }}
+            />
 
-          <Header />
-          {children}
-          <Footer />
+            <Header />
+            {children}
+            <Footer />
+            <CookieConsent />
+          </CartProvider>
         </Providers>
       </body>
     </html>

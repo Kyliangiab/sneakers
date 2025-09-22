@@ -751,7 +751,7 @@ export interface Product {
   id: number;
   title: string;
   slug?: string | null;
-  category: 'electronics' | 'clothing' | 'home' | 'sports';
+  category: 'homme' | 'femme' | 'enfants' | 'unisexe' | 'electronics' | 'clothing' | 'home' | 'sports';
   price: number;
   description: {
     root: {
@@ -800,6 +800,7 @@ export interface Order {
   id: number;
   orderNumber: string;
   customerEmail: string;
+  customer?: (number | null) | User;
   items?:
     | {
         product: number | Product;
@@ -812,7 +813,17 @@ export interface Order {
   shipping?: number | null;
   tax?: number | null;
   total: number;
-  status?: ('pending' | 'confirmed' | 'shipped' | 'delivered' | 'cancelled') | null;
+  status?: ('REQUIRES_PAYMENT' | 'PAID' | 'confirmed' | 'shipped' | 'delivered' | 'cancelled' | 'FAILED') | null;
+  stripeCheckoutSessionId?: string | null;
+  stripePaymentIntentId?: string | null;
+  billingAddress: {
+    firstName: string;
+    lastName: string;
+    address: string;
+    city: string;
+    postalCode: string;
+    country: string;
+  };
   shippingAddress: {
     firstName: string;
     lastName: string;
@@ -1463,6 +1474,7 @@ export interface ProductsSelect<T extends boolean = true> {
 export interface OrdersSelect<T extends boolean = true> {
   orderNumber?: T;
   customerEmail?: T;
+  customer?: T;
   items?:
     | T
     | {
@@ -1476,6 +1488,18 @@ export interface OrdersSelect<T extends boolean = true> {
   tax?: T;
   total?: T;
   status?: T;
+  stripeCheckoutSessionId?: T;
+  stripePaymentIntentId?: T;
+  billingAddress?:
+    | T
+    | {
+        firstName?: T;
+        lastName?: T;
+        address?: T;
+        city?: T;
+        postalCode?: T;
+        country?: T;
+      };
   shippingAddress?:
     | T
     | {

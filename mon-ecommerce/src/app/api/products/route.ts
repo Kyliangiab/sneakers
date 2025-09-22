@@ -164,6 +164,7 @@ export async function GET(request: NextRequest) {
     console.error('Error fetching products from Payload:', error)
 
     // Fallback: retourner des produits mockés en cas d'erreur
+    const fallbackLimit = 12
     const mockProducts = {
       docs: [
         {
@@ -212,7 +213,7 @@ export async function GET(request: NextRequest) {
         },
       ],
       totalDocs: 4,
-      limit: limit,
+      limit: fallbackLimit,
       totalPages: 1,
       page: 1,
       pagingCounter: 1,

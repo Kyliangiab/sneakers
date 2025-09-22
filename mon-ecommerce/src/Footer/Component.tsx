@@ -26,6 +26,12 @@ export async function Footer() {
             {navItems.map(({ link }, i) => {
               return <CMSLink className="text-white" key={i} {...link} />
             })}
+            <Link href="/rgpd" className="text-white hover:text-gray-300 transition-colors text-sm">
+              RGPD
+            </Link>
+            <Link href="/politique-retour" className="text-white hover:text-gray-300 transition-colors text-sm">
+              Politique de retour
+            </Link>
           </nav>
         </div>
       </div>

@@ -3,6 +3,7 @@
 import Link from 'next/link'
 import { useState, useEffect } from 'react'
 import { ShoppingCart, User, Menu, LogOut } from 'lucide-react'
+import { useCart } from '@/contexts/CartContext'
 
 interface UserData {
   id: number
@@ -18,6 +19,7 @@ export default function Header() {
   const [user, setUser] = useState<UserData | null>(null)
   const [showUserMenu, setShowUserMenu] = useState(false)
   const [hoverTimeout, setHoverTimeout] = useState<NodeJS.Timeout | null>(null)
+  const { totalItems } = useCart()
 
   useEffect(() => {
     // Récupérer les informations de l'utilisateur depuis le localStorage
@@ -98,9 +100,11 @@ export default function Header() {
             >
               <ShoppingCart className="w-6 h-6" />
               {/* Cart Badge */}
-              <span className="absolute -top-1 -right-1 bg-orange-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">
-                0
-              </span>
+              {totalItems > 0 && (
+                <span className="absolute -top-1 -right-1 bg-orange-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">
+                  {totalItems}
+                </span>
+              )}
             </Link>
 
             {/* User Account */}

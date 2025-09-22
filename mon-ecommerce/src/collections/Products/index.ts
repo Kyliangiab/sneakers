@@ -27,6 +27,11 @@ export const Products: CollectionConfig = {
       name: 'category',
       type: 'select',
       options: [
+        { label: 'Homme', value: 'homme' },
+        { label: 'Femme', value: 'femme' },
+        { label: 'Enfants', value: 'enfants' },
+        { label: 'Unisexe', value: 'unisexe' },
+        // Anciennes catégories pour la migration
         { label: 'Électronique', value: 'electronics' },
         { label: 'Vêtements', value: 'clothing' },
         { label: 'Maison', value: 'home' },

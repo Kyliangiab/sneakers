@@ -267,3 +267,4 @@ if (response.ok) {
 **Le système de compte utilisateur est maintenant entièrement fonctionnel !** 🎉
 
 **Les utilisateurs peuvent se connecter, accéder à leur compte, et gérer leurs informations.** ✅
+

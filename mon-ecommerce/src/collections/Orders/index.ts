@@ -19,6 +19,12 @@ export const Orders: CollectionConfig = {
       required: true,
     },
     {
+      name: 'customer',
+      type: 'relationship',
+      relationTo: 'users',
+      label: 'Client',
+    },
+    {
       name: 'items',
       type: 'array',
       fields: [
@@ -65,13 +71,37 @@ export const Orders: CollectionConfig = {
       name: 'status',
       type: 'select',
       options: [
-        { label: 'En attente', value: 'pending' },
+        { label: 'En attente de paiement', value: 'REQUIRES_PAYMENT' },
+        { label: 'Payée', value: 'PAID' },
         { label: 'Confirmée', value: 'confirmed' },
         { label: 'Expédiée', value: 'shipped' },
         { label: 'Livrée', value: 'delivered' },
         { label: 'Annulée', value: 'cancelled' },
+        { label: 'Échec de paiement', value: 'FAILED' },
       ],
-      defaultValue: 'pending',
+      defaultValue: 'REQUIRES_PAYMENT',
+    },
+    {
+      name: 'stripeCheckoutSessionId',
+      type: 'text',
+      label: 'ID de session Stripe',
+    },
+    {
+      name: 'stripePaymentIntentId',
+      type: 'text',
+      label: 'ID de payment intent Stripe',
+    },
+    {
+      name: 'billingAddress',
+      type: 'group',
+      fields: [
+        { name: 'firstName', type: 'text', required: true },
+        { name: 'lastName', type: 'text', required: true },
+        { name: 'address', type: 'text', required: true },
+        { name: 'city', type: 'text', required: true },
+        { name: 'postalCode', type: 'text', required: true },
+        { name: 'country', type: 'text', required: true },
+      ],
     },
     {
       name: 'shippingAddress',

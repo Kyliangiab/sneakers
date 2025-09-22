@@ -190,3 +190,4 @@ curl -X GET http://localhost:3000/api/users \
 **Le compte administrateur est maintenant créé et fonctionnel !** 🎉
 
 **Tu peux accéder à l'interface admin à l'adresse : `http://localhost:3000/admin`** ✅
+

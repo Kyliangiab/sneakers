@@ -208,3 +208,4 @@ const handleInputChange = (form: 'login' | 'signup', field: string, value: strin
 **La page d'authentification est maintenant créée exactement selon le design fourni !** 🎉
 
 **Prête pour l'intégration backend et les fonctionnalités avancées.** ✅
+

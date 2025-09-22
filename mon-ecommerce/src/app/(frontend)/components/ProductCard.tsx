@@ -5,6 +5,7 @@ import Link from 'next/link'
 import { Star, ShoppingCart } from 'lucide-react'
 import { useState } from 'react'
 import Toast from './Toast'
+import { useCart } from '@/contexts/CartContext'
 
 interface ProductCardProps {
   product: {
@@ -49,12 +50,50 @@ export default function ProductCard({ product }: ProductCardProps) {
     ))
   }
 
+  const { addToCart } = useCart()
+
+  // Extraire la marque et les détails du titre
+  const getBrandFromTitle = (title: string) => {
+    if (title.toLowerCase().includes('jordan')) return 'Air Jordan'
+    if (title.toLowerCase().includes('nike')) return 'Nike'
+    if (title.toLowerCase().includes('adidas')) return 'Adidas'
+    if (title.toLowerCase().includes('new balance')) return 'New Balance'
+    return 'Marque'
+  }
+
+  const getSizeFromTitle = (title: string) => {
+    // Extraire la taille du titre (ex: "Taille 42" ou "42")
+    const sizeMatch = title.match(/(\d{2,3})/g)
+    return sizeMatch ? sizeMatch[0] : '42'
+  }
+
+  const getColorFromTitle = (title: string) => {
+    const colors = ['Blanc', 'Noir', 'Rouge', 'Bleu', 'Vert', 'Jaune', 'Orange', 'Rose', 'Gris']
+    for (const color of colors) {
+      if (title.toLowerCase().includes(color.toLowerCase())) {
+        return color
+      }
+    }
+    return 'Blanc'
+  }
+
   const handleAddToCart = (e: React.MouseEvent) => {
     e.preventDefault()
     e.stopPropagation()
-    // TODO: Implémenter l'ajout au panier
-    console.log('Ajouter au panier:', product.title)
+
+    // Ajouter au panier avec les détails extraits
+    addToCart({
+      productId: product.id,
+      title: product.title,
+      brand: getBrandFromTitle(product.title),
+      price: product.price,
+      image: product.images?.[0]?.url || '/api/placeholder/400/400',
+      size: getSizeFromTitle(product.title),
+      color: getColorFromTitle(product.title),
+    })
+
     setShowToast(true)
+    setTimeout(() => setShowToast(false), 3000)
   }
 
   // Déterminer quelle image afficher
