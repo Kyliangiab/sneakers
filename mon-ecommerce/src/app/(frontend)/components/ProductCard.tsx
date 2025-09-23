@@ -13,6 +13,8 @@ interface ProductCardProps {
     title: string
     slug: string
     price: number
+    stock?: number
+    isInStock?: boolean
     images?: Array<{
       url: string
       alt?: string
@@ -77,9 +79,32 @@ export default function ProductCard({ product }: ProductCardProps) {
     return 'Blanc'
   }
 
+  // Fonction pour déterminer le statut du stock
+  const getStockStatus = () => {
+    const stock = product.stock || 0
+    const isInStock = product.isInStock !== false
+
+    if (!isInStock || stock === 0) {
+      return { status: 'out-of-stock', text: 'Rupture de stock', color: 'text-red-500' }
+    } else if (stock <= 5) {
+      return { status: 'low-stock', text: `Plus que ${stock} en stock`, color: 'text-orange-500' }
+    } else {
+      return { status: 'in-stock', text: `${stock} en stock`, color: 'text-green-500' }
+    }
+  }
+
   const handleAddToCart = (e: React.MouseEvent) => {
     e.preventDefault()
     e.stopPropagation()
+
+    const stockStatus = getStockStatus()
+
+    // Vérifier si le produit est en stock
+    if (stockStatus.status === 'out-of-stock') {
+      setShowToast(true)
+      setTimeout(() => setShowToast(false), 3000)
+      return
+    }
 
     // Ajouter au panier avec les détails extraits
     addToCart({
@@ -153,10 +178,19 @@ export default function ProductCard({ product }: ProductCardProps) {
               >
                 <button
                   onClick={handleAddToCart}
-                  className="bg-orange-500 hover:bg-orange-600 text-white px-6 py-3 rounded-lg font-medium transition-all duration-200 transform translate-y-4 group-hover:translate-y-0 flex items-center space-x-2 shadow-lg"
+                  disabled={getStockStatus().status === 'out-of-stock'}
+                  className={`px-6 py-3 rounded-lg font-medium transition-all duration-200 transform translate-y-4 group-hover:translate-y-0 flex items-center space-x-2 shadow-lg ${
+                    getStockStatus().status === 'out-of-stock'
+                      ? 'bg-gray-400 text-gray-200 cursor-not-allowed'
+                      : 'bg-orange-500 hover:bg-orange-600 text-white'
+                  }`}
                 >
                   <ShoppingCart className="w-4 h-4" />
-                  <span>Ajouter au panier</span>
+                  <span>
+                    {getStockStatus().status === 'out-of-stock'
+                      ? 'Rupture de stock'
+                      : 'Ajouter au panier'}
+                  </span>
                 </button>
               </div>
             </div>
@@ -176,6 +210,11 @@ export default function ProductCard({ product }: ProductCardProps) {
 
               {/* Price */}
               <div className="text-lg font-bold text-gray-900">{formatPrice(product.price)}</div>
+
+              {/* Stock Status */}
+              <div className={`text-sm font-medium ${getStockStatus().color}`}>
+                {getStockStatus().text}
+              </div>
             </div>
           </div>
         </Link>
@@ -184,8 +223,12 @@ export default function ProductCard({ product }: ProductCardProps) {
       {/* Toast de confirmation */}
       {showToast && (
         <Toast
-          message={`${product.title} ajouté au panier !`}
-          type="success"
+          message={
+            getStockStatus().status === 'out-of-stock'
+              ? `${product.title} - Rupture de stock`
+              : `${product.title} ajouté au panier !`
+          }
+          type={getStockStatus().status === 'out-of-stock' ? 'error' : 'success'}
           onClose={() => setShowToast(false)}
         />
       )}

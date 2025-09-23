@@ -148,6 +148,8 @@ export async function GET(request: NextRequest) {
         title: product.title,
         slug: product.slug,
         price: product.price || 0,
+        stock: product.stock || 0,
+        isInStock: product.isInStock !== false, // Par défaut true si non défini
         rating: product.rating || 4.5,
         reviewCount: product.reviewCount || 0,
         isNewArrival: product.isNewArrival || false,
@@ -172,6 +174,8 @@ export async function GET(request: NextRequest) {
           title: 'Air Jordan 1 Retro High OG',
           slug: 'air-jordan-1-retro-high-og',
           price: 150,
+          stock: 15,
+          isInStock: true,
           rating: 4.8,
           reviewCount: 1247,
           isNewArrival: true,
@@ -183,6 +187,8 @@ export async function GET(request: NextRequest) {
           title: 'Nike Air Max 90 Essential',
           slug: 'nike-air-max-90-essential',
           price: 120,
+          stock: 8,
+          isInStock: true,
           rating: 4.6,
           reviewCount: 892,
           isNewArrival: false,
@@ -194,6 +200,8 @@ export async function GET(request: NextRequest) {
           title: 'Adidas Ultraboost 22',
           slug: 'adidas-ultraboost-22',
           price: 180,
+          stock: 0,
+          isInStock: false,
           rating: 4.9,
           reviewCount: 2156,
           isNewArrival: true,
@@ -205,6 +213,8 @@ export async function GET(request: NextRequest) {
           title: 'New Balance 550 White',
           slug: 'new-balance-550-white',
           price: 110,
+          stock: 3,
+          isInStock: true,
           rating: 4.5,
           reviewCount: 634,
           isNewArrival: false,
@@ -224,5 +234,27 @@ export async function GET(request: NextRequest) {
     }
 
     return NextResponse.json(mockProducts)
+  }
+}
+
+export async function POST(request: NextRequest) {
+  try {
+    const payload = await getPayload({ config })
+    const body = await request.json()
+
+    console.log('Creating product with data:', body)
+
+    // Créer le produit dans Payload CMS
+    const product = await payload.create({
+      collection: 'products',
+      data: body,
+    })
+
+    console.log('Product created successfully:', product.id)
+
+    return NextResponse.json(product, { status: 201 })
+  } catch (error) {
+    console.error('Error creating product:', error)
+    return NextResponse.json({ error: 'Failed to create product' }, { status: 500 })
   }
 }

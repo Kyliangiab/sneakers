@@ -43,7 +43,6 @@ interface FilterSection {
 export default function HommeProductsPage() {
   const [products, setProducts] = useState<Product[]>([])
   const [loading, setLoading] = useState(true)
-  const [loadingMore, setLoadingMore] = useState(false)
   const [currentPage, setCurrentPage] = useState(1)
   const [totalProducts, setTotalProducts] = useState(0)
   const [hasMoreProducts, setHasMoreProducts] = useState(true)
@@ -94,64 +93,65 @@ export default function HommeProductsPage() {
     fetchFilterData()
   }, [])
 
+  // Fonction pour récupérer les produits
+  const fetchProducts = async (page = 1) => {
+    setLoading(true)
+
+    try {
+      // Construire les paramètres de requête
+      const params = new URLSearchParams({
+        limit: '53',
+        page: page.toString(),
+        category: 'homme',
+      })
+
+      if (filters.search) params.append('search', filters.search)
+      if (filters.size.length > 0) params.append('sizes', filters.size.join(','))
+      if (filters.brand.length > 0) params.append('brands', filters.brand.join(','))
+      if (filters.color.length > 0) params.append('colors', filters.color.join(','))
+      if (filters.priceRange[0] > 0) params.append('minPrice', filters.priceRange[0].toString())
+      if (filters.priceRange[1] < 500) params.append('maxPrice', filters.priceRange[1].toString())
+
+      const response = await fetch(`/api/products?${params.toString()}`)
+      const data = await response.json()
+
+      setProducts(data.docs || [])
+
+      setTotalProducts(data.totalDocs || 0)
+      setHasMoreProducts(data.hasNextPage || false)
+      setCurrentPage(page)
+    } catch (error) {
+      console.error('Error fetching products:', error)
+      // En cas d'erreur, afficher un message d'erreur
+      setProducts([])
+    }
+    setLoading(false)
+  }
+
   // Récupérer les produits homme avec filtres
   useEffect(() => {
-    const fetchProducts = async (page = 1, append = false) => {
-      if (page === 1) {
-        setLoading(true)
-      } else {
-        setLoadingMore(true)
-      }
-
-      try {
-        // Construire les paramètres de requête
-        const params = new URLSearchParams({
-          limit: '12',
-          page: page.toString(),
-          category: 'homme',
-        })
-
-        if (filters.search) params.append('search', filters.search)
-        if (filters.size.length > 0) params.append('sizes', filters.size.join(','))
-        if (filters.brand.length > 0) params.append('brands', filters.brand.join(','))
-        if (filters.color.length > 0) params.append('colors', filters.color.join(','))
-        if (filters.priceRange[0] > 0) params.append('minPrice', filters.priceRange[0].toString())
-        if (filters.priceRange[1] < 500) params.append('maxPrice', filters.priceRange[1].toString())
-
-        const response = await fetch(`/api/products?${params.toString()}`)
-        const data = await response.json()
-
-        if (append) {
-          setProducts((prev) => [...prev, ...(data.docs || [])])
-        } else {
-          setProducts(data.docs || [])
-        }
-
-        setTotalProducts(data.totalDocs || 0)
-        setHasMoreProducts(data.hasNextPage || false)
-        setCurrentPage(page)
-      } catch (error) {
-        console.error('Error fetching products:', error)
-        // En cas d'erreur, afficher un message d'erreur
-        setProducts([])
-      }
-      setLoading(false)
-      setLoadingMore(false)
-    }
-
     // Reset pagination quand les filtres changent
     if (currentPage === 1) {
-      fetchProducts(1, false)
+      fetchProducts(1)
     } else {
       setCurrentPage(1)
-      fetchProducts(1, false)
+      fetchProducts(1)
     }
   }, [filters]) // Re-fetch quand les filtres changent
 
-  // Fonction pour charger plus de produits
-  const loadMoreProducts = () => {
-    if (!loadingMore && hasMoreProducts) {
-      fetchProducts(currentPage + 1, true)
+  // Fonction pour aller à la page suivante
+  const goToNextPage = () => {
+    if (hasMoreProducts) {
+      fetchProducts(currentPage + 1)
+      window.scrollTo({ top: 0, behavior: 'smooth' })
+    }
+  }
+
+  // Fonction pour aller à la page précédente
+  const goToPreviousPage = () => {
+    if (currentPage > 1) {
+      fetchProducts(currentPage - 1)
+      window.scrollTo({ top: 0, behavior: 'smooth' })
     }
   }
 
@@ -505,31 +505,32 @@ export default function HommeProductsPage() {
               )}
 
               {/* Load More Button */}
-              {hasMoreProducts && (
-                <div className="mt-12 text-center">
-                  <button
-                    onClick={loadMoreProducts}
-                    disabled={loadingMore}
-                    className="bg-black text-white px-8 py-3 rounded-lg hover:bg-gray-800 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-                  >
-                    {loadingMore ? (
-                      <div className="flex items-center">
-                        <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
-                        Chargement...
-                      </div>
-                    ) : (
-                      'Charger plus de produits'
-                    )}
-                  </button>
-                </div>
-              )}
+              {/* Pagination */}
+              <div className="mt-12 flex justify-center items-center gap-4">
+                <button
+                  onClick={goToPreviousPage}
+                  disabled={currentPage === 1 || loading}
+                  className="bg-gray-200 text-gray-700 px-6 py-2 rounded-lg hover:bg-gray-300 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
+                >
+                  <ChevronRight className="w-4 h-4 rotate-180" />
+                  Précédent
+                </button>
 
-              {/* End of results message */}
-              {!hasMoreProducts && products.length > 0 && (
-                <div className="mt-12 text-center text-gray-500">
-                  <p>Tous les produits ont été chargés</p>
+                <div className="flex items-center gap-2">
+                  <span className="text-gray-600">Page {currentPage}</span>
+                  <span className="text-gray-400">•</span>
+                  <span className="text-gray-600">{totalProducts} produits</span>
                 </div>
-              )}
+
+                <button
+                  onClick={goToNextPage}
+                  disabled={!hasMoreProducts || loading}
+                  className="bg-black text-white px-6 py-2 rounded-lg hover:bg-gray-800 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
+                >
+                  Suivant
+                  <ChevronRight className="w-4 h-4" />
+                </button>
+              </div>
             </div>
           </div>
         </div>

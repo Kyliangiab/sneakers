@@ -5,6 +5,7 @@ import { useState, useEffect } from 'react'
 import { ShoppingCart, User, Menu, LogOut } from 'lucide-react'
 import { useCart } from '@/contexts/CartContext'
 import SearchBar from './SearchBar'
+import { Logo } from '@/components/Logo/Logo'
 
 interface UserData {
   id: number
@@ -75,7 +76,7 @@ export default function Header() {
           {/* Logo */}
           <div className="flex-shrink-0">
             <Link href="/" className="flex items-center">
-              <div className="text-2xl font-bold text-black">SNEAKERS</div>
+              <Logo className="h-8 w-auto" />
             </Link>
           </div>
 
@@ -170,7 +171,7 @@ export default function Header() {
             <div className="mb-4 px-4">
               <SearchBar />
             </div>
-            
+
             <nav className="flex flex-col space-y-4 px-4">
               {navigationItems.map((item) => (
                 <Link

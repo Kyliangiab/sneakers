@@ -5,7 +5,7 @@ export const Products: CollectionConfig = {
   slug: 'products',
   admin: {
     useAsTitle: 'title',
-    defaultColumns: ['title', 'price', 'category', 'updatedAt'],
+    defaultColumns: ['title', 'price', 'stock', 'category', 'updatedAt'],
   },
   access: {
     read: () => true, // Lecture publique pour le frontend
@@ -49,6 +49,24 @@ export const Products: CollectionConfig = {
       type: 'number',
       required: true,
       min: 0,
+    },
+    {
+      name: 'stock',
+      type: 'number',
+      required: true,
+      min: 0,
+      defaultValue: 0,
+      admin: {
+        description: 'Quantité en stock pour ce produit',
+      },
+    },
+    {
+      name: 'isInStock',
+      type: 'checkbox',
+      defaultValue: true,
+      admin: {
+        description: 'Produit disponible à la vente',
+      },
     },
     {
       name: 'description',

@@ -1,0 +1,20 @@
+<svg width="193" height="34" viewBox="0 0 193 34" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- Logo Walk avec chaussure orange stylisée -->
+  <g>
+    <!-- Chaussure orange principale -->
+    <path d="M6 10C6 8.89543 6.89543 8 8 8H26C27.1046 8 28 8.89543 28 10V18C28 19.1046 27.1046 20 26 20H8C6.89543 20 6 19.1046 6 18V10Z" fill="#FF8C00"/>
+    
+    <!-- Zone de laçage (ovale blanc) -->
+    <ellipse cx="17" cy="12" rx="4" ry="2.5" fill="white"/>
+    
+    <!-- Lignes de détail -->
+    <rect x="13" y="13" width="8" height="0.8" fill="white"/>
+    <rect x="13" y="15" width="8" height="0.8" fill="white"/>
+    
+    <!-- Semelle plus foncée -->
+    <path d="M6 18L28 18L26 22L8 22L6 18Z" fill="#E67E00"/>
+    
+    <!-- Texte Walk avec style moderne -->
+    <text x="38" y="20" font-family="'Arial', sans-serif" font-size="18" font-weight="bold" fill="#FF8C00" style="letter-spacing: 0.5px;">Walk</text>
+  </g>
+</svg>

@@ -38,13 +38,14 @@ export async function GET(req: NextRequest, { params }: { params: Promise<{ slug
       description: product.description || '',
       shortDescription: product.shortDescription || '',
       category: product.category || 'homme',
-      images: product.images?.map((img: any) => ({
-        image: {
-          url: img.image?.url || '/api/placeholder/400/400',
-          alt: img.image?.alt || product.title,
-        },
-        alt: img.alt || product.title,
-      })) || [],
+      images:
+        product.images?.map((img: any) => ({
+          image: {
+            url: img.image?.url || '/api/placeholder/400/400',
+            alt: img.image?.alt || product.title,
+          },
+          alt: img.alt || product.title,
+        })) || [],
       variants: product.variants || [],
       rating: product.rating || 4.5,
       reviewCount: product.reviewCount || 0,
@@ -57,7 +58,7 @@ export async function GET(req: NextRequest, { params }: { params: Promise<{ slug
     console.error('Erreur lors de la récupération du produit:', error)
     return NextResponse.json(
       { error: 'Erreur lors de la récupération du produit' },
-      { status: 500 }
+      { status: 500 },
     )
   }
 }

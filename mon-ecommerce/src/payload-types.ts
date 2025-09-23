@@ -755,6 +755,14 @@ export interface Product {
   slug?: string | null;
   category: 'homme' | 'femme' | 'enfants' | 'unisexe' | 'electronics' | 'clothing' | 'home' | 'sports';
   price: number;
+  /**
+   * Quantité en stock pour ce produit
+   */
+  stock: number;
+  /**
+   * Produit disponible à la vente
+   */
+  isInStock?: boolean | null;
   description: {
     root: {
       type: string;
@@ -1509,6 +1517,8 @@ export interface ProductsSelect<T extends boolean = true> {
   slug?: T;
   category?: T;
   price?: T;
+  stock?: T;
+  isInStock?: T;
   description?: T;
   shortDescription?: T;
   images?:
