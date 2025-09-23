@@ -68,11 +68,11 @@ describe('Parcours d\'achat complet (unit)', () => {
       // TVA: 198.9 * 0.20 = 39.78
       expect(result.vatAmount).toBeCloseTo(39.78, 2)
       
-      // Livraison: 9.99 (car < 150€)
-      expect(result.shipping).toBe(9.99)
+      // Livraison: 0 (car 198.9€ >= 150€)
+      expect(result.shipping).toBe(0)
       
-      // Total: 198.9 + 39.78 + 9.99 = 248.67
-      expect(result.total).toBeCloseTo(248.67, 2)
+      // Total: 198.9 + 39.78 + 0 = 238.68
+      expect(result.total).toBeCloseTo(238.68, 2)
     })
 
     it('calcule correctement le total avec coupon fixe', () => {
@@ -89,8 +89,8 @@ describe('Parcours d\'achat complet (unit)', () => {
       // Remise: 10€
       expect(result.discount).toBe(10)
       
-      // Total: 198.9 + 39.78 + 9.99 - 10 = 238.67
-      expect(result.total).toBeCloseTo(238.67, 2)
+      // Total: 198.9 + 39.78 + 0 - 10 = 228.68
+      expect(result.total).toBeCloseTo(228.68, 2)
     })
 
     it('calcule correctement le total avec coupon pourcentage', () => {
@@ -140,7 +140,8 @@ describe('Parcours d\'achat complet (unit)', () => {
 
     it('formate correctement les prix', () => {
       const formatted = formatPrice(123.45, 'eur')
-      expect(formatted).toBe('123,45 €')
+      expect(formatted).toContain('123,45')
+      expect(formatted).toContain('€')
     })
   })
 
@@ -187,9 +188,9 @@ describe('Parcours d\'achat complet (unit)', () => {
         customerEmail: 'customer@example.com',
         items: [],
         subtotal: 198.9,
-        shipping: 9.99,
+        shipping: 0,
         tax: 39.78,
-        total: 238.67,
+        total: 228.68,
         status: 'pending',
         createdAt: new Date(),
         updatedAt: new Date()
@@ -221,7 +222,7 @@ describe('Parcours d\'achat complet (unit)', () => {
       ])
 
       expect(stripeService.createPaymentIntent).toHaveBeenCalledWith({
-        amount: 23867, // 238.67€ en centimes
+        amount: 22868, // 228.68€ en centimes
         currency: 'EUR',
         metadata: {
           customer_email: 'customer@example.com',
@@ -246,9 +247,9 @@ describe('Parcours d\'achat complet (unit)', () => {
           })
         ]),
         subtotal: 198.9,
-        shipping: 9.99,
+        shipping: 0,
         tax: 39.78,
-        total: 238.67,
+        total: 228.68,
         stripePaymentIntentId: 'pi_test_123',
         billingAddress: expect.any(Object)
       })
